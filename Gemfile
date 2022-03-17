@@ -1,8 +1,9 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.3'
 
+ruby '3.0.3'
+gem 'autoprefixer-rails', ' 9.1.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.4'
 # Use Puma as the app server
@@ -33,6 +34,7 @@ gem 'bootstrap', '~> 5.1'
 
 # AWS S3
 gem 'aws-sdk-s3', '~> 1.112'
+
 
 # Webrick
 gem "webrick", "~> 1.7"
@@ -69,6 +71,7 @@ group :development do
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3', '~> 1.4.2'
 end
+
 
 group :production do
   # Use pg as the database for Active Record
