@@ -11,7 +11,7 @@ function Request() {
 
 //------------------ Create User --------------------
 
-function createUser(username, email, password, callback) {
+export function createUser(username, email, password, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'POST';
   newRequest['url'] = 'users';
@@ -32,7 +32,7 @@ function createUser(username, email, password, callback) {
 
 //------------------ Signing In -----------------------
 
-function signInUser(username, password, callback) {
+export function signInUser(username, password, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'POST';
   newRequest['url'] = 'sessions';
@@ -53,7 +53,7 @@ function signInUser(username, password, callback) {
 
 //------------------- Logging Out ---------------------
 
-function logoutUser(callback) {
+export function logoutUser(callback) {
   var newRequest = new Request();
   newRequest['type'] = 'DELETE';
   newRequest['url'] = 'sessions';
@@ -68,7 +68,7 @@ function logoutUser(callback) {
 
 //------------------ Authenticate ---------------------
 
-function authenticate(successCB,errorCB) {
+export function authenticate(successCB,errorCB) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
   newRequest['url'] = 'authenticated';
@@ -87,7 +87,7 @@ function authenticate(successCB,errorCB) {
 //---------------------- Tweets -----------------------
 
 //------------------- Post a Tweet --------------------
-function postTweet(msg, callback) {
+export function postTweet(msg, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'POST';
   newRequest['url'] = 'tweets';
@@ -107,7 +107,7 @@ function postTweet(msg, callback) {
 
 //------------------- Get all Tweets ------------------
 
-function getAllTweets(callback) {
+export function getAllTweets(callback) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
   newRequest['url'] = 'tweets';
@@ -120,7 +120,7 @@ function getAllTweets(callback) {
 
 //----------------- Get tweet by ID --------------------
 
-function getOneTweet(id) {
+export function getOneTweet(id) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
   newRequest['url'] = 'tweets/' + id;
@@ -133,7 +133,7 @@ function getOneTweet(id) {
 
 //------------- Get All Tweets by Username -------------
 
-function getUserTweets(username, callback) {
+export function getUserTweets(username, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
   newRequest['url'] = 'users/' + username + '/tweets';
@@ -147,7 +147,7 @@ function getUserTweets(username, callback) {
 
 //---------------- Delete a tweet by ID ----------------
 
-function deleteOneTweet(id, callback) {
+export function deleteOneTweet(id, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'DELETE';
   newRequest['url'] = 'tweets/' + id;
@@ -162,7 +162,7 @@ function deleteOneTweet(id, callback) {
 
 //--------------- Search Tweet by Keyword --------------
 
-function searchTweets(keyword, callback) {
+export function searchTweets(keyword, callback) {
   var newRequest = new Request();
   newRequest['type'] = "GET";
   newRequest['url'] = "tweets/search/"+keyword;

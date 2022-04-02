@@ -1,9 +1,11 @@
+import * as requests from './requests';
+
 $(".static_pages.home").ready(function(){
 
   //------------------ authenticate and redirect ---------------------
 
   function authenRedirect() {
-    authenticate(function(response) {
+    requests.authenticate(function(response) {
       if(response.authenticated) {
         window.location.replace("/feeds");
       }
@@ -17,8 +19,8 @@ $(".static_pages.home").ready(function(){
     var usernameInput = $('.sign-up .username').val();
     var emailInput = $('.sign-up .email').val();
     var passwordInput = $('.sign-up .password').val();
-    createUser(usernameInput, emailInput, passwordInput, function(){
-      signInUser(usernameInput, passwordInput, function(){
+    requests.createUser(usernameInput, emailInput, passwordInput, function(){
+      requests.signInUser(usernameInput, passwordInput, function(){
         authenRedirect();
       });
     });
@@ -28,7 +30,7 @@ $(".static_pages.home").ready(function(){
     e.preventDefault();
     var usernameInput = $('.log-in .username').val();
     var passwordInput = $('.log-in .password').val();
-    signInUser(usernameInput, passwordInput, function(){
+    requests.signInUser(usernameInput, passwordInput, function(){
       authenRedirect();
     });
   });
