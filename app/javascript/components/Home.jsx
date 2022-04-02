@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import './home.scss';
+import './Home.scss';
 
 const Home = props => (
   <div>
@@ -80,9 +80,4 @@ const Home = props => (
   </div>
 )
 
-document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <Home />,
-    document.body.appendChild(document.createElement('div')),
-  )
-})
+export default Home

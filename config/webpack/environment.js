@@ -1,18 +1,14 @@
 const { environment } = require('@rails/webpacker')
 
-const path = require('path')
+const webpack = require('webpack')
 
-const customConfig = {
-  resolve: {
-    alias: {
-      '@src': path.resolve(__dirname, '..', '..', 'app/javascript/src'),
-    }
-  }
-}
-
-environment.config.merge(customConfig);
-
-// Uncomment below to enable split chunks
-// environment.splitChunks()
+environment.plugins.append('Provide',
+  new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery',
+    Popper: ['popper.js', 'default'],
+    Rails: '@rails/ujs'
+  })
+)
 
 module.exports = environment

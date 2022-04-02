@@ -32,6 +32,9 @@ gem 'bcrypt', '~> 3.1'
 # Bootstrap
 gem 'bootstrap', '~> 5.1'
 
+# React
+gem 'react-rails'
+
 # AWS S3
 gem 'aws-sdk-s3', '~> 1.112'
 
