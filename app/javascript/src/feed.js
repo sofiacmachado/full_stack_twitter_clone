@@ -34,6 +34,10 @@ $(".feeds.index").ready(function(){
           if(!response.authenticated) {
             window.location.replace("/");
           }
+        },
+        function(error) {
+          console.log(error);
+          // window.location.replace("/");
         });
       });
     });

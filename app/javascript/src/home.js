@@ -9,6 +9,9 @@ $(".static_pages.home").ready(function(){
       if(response.authenticated) {
         window.location.replace("/feeds");
       }
+    }, function(error) {
+      console.log(error);
+      // window.location.replace("/");
     });
   };
 

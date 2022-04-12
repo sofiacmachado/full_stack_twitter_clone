@@ -14,7 +14,7 @@ function Request() {
 export function createUser(username, email, password, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'POST';
-  newRequest['url'] = 'users';
+  newRequest['url'] = 'api/users';
   newRequest['data'] = {
     'user': {
       'username': username,
@@ -24,7 +24,9 @@ export function createUser(username, email, password, callback) {
   };
   newRequest['success'] = function(response){
     console.log(response);
-    return callback();
+    if (response.success != false) {
+      return callback();
+    }
   };
 
   $.ajax(newRequest);
@@ -35,7 +37,7 @@ export function createUser(username, email, password, callback) {
 export function signInUser(username, password, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'POST';
-  newRequest['url'] = 'sessions';
+  newRequest['url'] = 'api/sessions';
   newRequest['xhrFields'] = { 'withCredentials': true };
   newRequest['data'] = {
     'user': {
@@ -45,7 +47,9 @@ export function signInUser(username, password, callback) {
   };
   newRequest['success'] = function(response){
     console.log(response);
-    return callback();
+    if (response.success != false) {
+      return callback();
+    }
   };
 
   $.ajax(newRequest);
@@ -56,11 +60,13 @@ export function signInUser(username, password, callback) {
 export function logoutUser(callback) {
   var newRequest = new Request();
   newRequest['type'] = 'DELETE';
-  newRequest['url'] = 'sessions';
+  newRequest['url'] = 'api/sessions';
   newRequest['xhrFields'] = { 'withCredentials': true };
   newRequest['success'] = function(response){
     console.log(response);
-    return callback();
+    if (response.success != false) {
+      return callback();
+    }
   };
 
   $.ajax(newRequest);
@@ -71,7 +77,7 @@ export function logoutUser(callback) {
 export function authenticate(successCB,errorCB) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
-  newRequest['url'] = 'authenticated';
+  newRequest['url'] = 'api/authenticated';
   newRequest['xhrFields'] = { 'withCredentials': true };
   newRequest['success'] = function(response){
     console.log(response);
@@ -90,7 +96,7 @@ export function authenticate(successCB,errorCB) {
 export function postTweet(msg, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'POST';
-  newRequest['url'] = 'tweets';
+  newRequest['url'] = 'api/tweets';
   newRequest['xhrFields'] = { 'withCredentials': true };
   newRequest['data'] = {
     'tweet': {
@@ -110,7 +116,7 @@ export function postTweet(msg, callback) {
 export function getAllTweets(callback) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
-  newRequest['url'] = 'tweets';
+  newRequest['url'] = 'api/tweets';
   newRequest['success'] = function(response){
     return callback(response.tweets);
   };
@@ -123,7 +129,7 @@ export function getAllTweets(callback) {
 export function getOneTweet(id) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
-  newRequest['url'] = 'tweets/' + id;
+  newRequest['url'] = 'api/tweets/' + id;
   newRequest['success'] = function(response){
     console.log(response);
   };
@@ -136,7 +142,7 @@ export function getOneTweet(id) {
 export function getUserTweets(username, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'GET';
-  newRequest['url'] = 'users/' + username + '/tweets';
+  newRequest['url'] = 'api/users/' + username + '/tweets';
   newRequest['success'] = function(response){
     console.log(response);
     return callback(response.tweets);
@@ -150,7 +156,7 @@ export function getUserTweets(username, callback) {
 export function deleteOneTweet(id, callback) {
   var newRequest = new Request();
   newRequest['type'] = 'DELETE';
-  newRequest['url'] = 'tweets/' + id;
+  newRequest['url'] = 'api/tweets/' + id;
   newRequest['xhrFields'] = { 'withCredentials': true };
   newRequest['success'] = function(response){
     console.log(response);
@@ -165,7 +171,7 @@ export function deleteOneTweet(id, callback) {
 export function searchTweets(keyword, callback) {
   var newRequest = new Request();
   newRequest['type'] = "GET";
-  newRequest['url'] = "tweets/search/"+keyword;
+  newRequest['url'] = "api/tweets/search/"+keyword;
   newRequest["success"] = function(response){
     console.log(response);
     return callback(response.tweets);
