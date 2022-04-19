@@ -1,15 +1,17 @@
+import * as requests from './requests';
+
 $(".feeds.index").ready(function(){
 
     var currentUser;
   
-    authenticate(function(response) {
+    requests.authenticate(function(response) {
       console.log(response);
       if(response.authenticated) {
         currentUser = response.username;
         $('#user-icon').text(currentUser);
         $('.username').text(currentUser);
         $('.screenName').text('@'+currentUser);
-        getUserTweets(currentUser, function(response) {
+        requests.getUserTweets(currentUser, function(response) {
           $('.user-stats-tweets').text(response.length);
         });
       } else {
@@ -59,7 +61,8 @@ $(".feeds.index").ready(function(){
     });
   
     $(document).on('click', '#post-tweet-btn', function() {
-      postTweet($('.post-input').val(), function(result) {
+      console.log('hoooo');
+      requests.postTweet($('.post-input').val(), function(result) {
         if(result.success) {
           $('.post-input').val('');
           getTweetsAndPost();
@@ -72,7 +75,7 @@ $(".feeds.index").ready(function(){
     });
   
     function getTweetsAndPost() {
-      getAllTweets(function(tweets){
+      requests.getAllTweets(function(tweets){
         $('.feed').text('');
         $.each(tweets, function(index){
           if(tweets[index]['username'] === currentUser) {
