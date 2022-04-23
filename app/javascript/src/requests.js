@@ -4,8 +4,10 @@ function Request() {
   this.data = {};
   this.dataType = 'json';
   this.success = function(response){
+    console.log('success', response);
   }
   this.error = function(response){
+    console.log('error', response);
   }
 };
 
@@ -163,6 +165,7 @@ export function deleteOneTweet(id, callback) {
     return callback();
   };
 
+  console.log('deleting tweet:', id);
   $.ajax(newRequest);
 };
 

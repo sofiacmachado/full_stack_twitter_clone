@@ -1,6 +1,7 @@
 import * as requests from './requests';
 
-$(".feeds.index").ready(function(){
+$('.feed').ready(function(){
+  console.log('ready');
 
     var currentUser;
   
@@ -25,14 +26,15 @@ $(".feeds.index").ready(function(){
     function profileCardChanger(username) {
       $('.user-field .username').text(username);
       $('.user-field .screenName').text('@'+username);
-      getUserTweets(username, function(response) {
+      requests.getUserTweets(username, function(response) {
         $('.user-stats-tweets').text(response.length);
       });
     };
   
-    $(document).on('click', '#log-out', function() {
-      logoutUser(function(){
-        authenticate(function(response) {
+    $('#log-out').click(function(e) {
+      e.preventDefault();
+      requests.logoutUser(function(){
+        requests.authenticate(function(response) {
           if(!response.authenticated) {
             window.location.replace("/");
           }
@@ -56,18 +58,19 @@ $(".feeds.index").ready(function(){
       }
     };
   
-    $(document).on('keyup', '.post-input', function() {
+    $('.post-input').on('keyup', function() {
       charCount();
     });
   
-    $(document).on('click', '#post-tweet-btn', function() {
+    $('#post-tweet-btn').click(function(e) {
+      e.preventDefault();
       console.log('hoooo');
       requests.postTweet($('.post-input').val(), function(result) {
         if(result.success) {
           $('.post-input').val('');
           getTweetsAndPost();
           charCount();
-          getUserTweets(currentUser, function(response) {
+          requests.getUserTweets(currentUser, function(response) {
           $('.user-stats-tweets').text(response.length);
         });
         }
@@ -77,6 +80,7 @@ $(".feeds.index").ready(function(){
     function getTweetsAndPost() {
       requests.getAllTweets(function(tweets){
         $('.feed').text('');
+        console.log('got all tweets');
         $.each(tweets, function(index){
           if(tweets[index]['username'] === currentUser) {
             $('.feed').append(
@@ -97,25 +101,33 @@ $(".feeds.index").ready(function(){
             );
           }
         });
+        assignDeleteFunction($('.delete-tweet'));
       });
     }
   
-    $(document).on('click', '.navbar-brand', function() {
+    $('.navbar-brand').click(function(e) {
+      e.preventDefault();
       getTweetsAndPost();
       profileCardChanger(currentUser);
     });
   
-    $(document).on('click', '.delete-tweet', function() {
-      deleteOneTweet($(this).attr('id'), function(){
-        getTweetsAndPost();
+//ver função asssingDelete
+
+    function assignDeleteFunction(buttons) {
+      buttons.click(function(e) {
+        e.preventDefault();
+        console.log('clicked delete:', $(this).attr('id'));
+        requests.deleteOneTweet($(this).attr('id'), function(){
+          getTweetsAndPost();
+        });
       });
-    });
+    }
   
   
     function getUserTweetsAndPost(username) {
-      getUserTweets(username, function(response) {
+      requests.getUserTweets(username, function(response) {
         $('.feed').text('');
-        console.log(response);
+        console.log('got user tweets', response);
         $.each(response, function(index){
           if(response[index]['username'] === currentUser) {
             $('.feed').append(
@@ -139,18 +151,21 @@ $(".feeds.index").ready(function(){
       });
     }
   
-    $(document).on('click', '.tweet-username', function() {
+    $('.tweet-username').click(function(e) {
+      e.preventDefault();
+      console.log('user tweets');
       getUserTweetsAndPost($(this).text());
       profileCardChanger($(this).text());
     });
   
-    $(document).on('click', '.username', function() {
+    $('.username').click(function(e) {
+      e.preventDefault();
       getUserTweetsAndPost($(this).text());
       profileCardChanger($(this).text());
     });
   
     function searchTweetsAndPost(keyword) {
-      searchTweets(keyword, function(tweets){
+      requests.searchTweets(keyword, function(tweets){
         console.log(tweets.length);
         if(tweets.length > 0) {
           $('.feed').text('');
@@ -178,7 +193,8 @@ $(".feeds.index").ready(function(){
       });
     };
   
-    $(document).on('click', '.search-btn', function(){
+    $('.search-btn').click(function(e){
+      e.preventDefault();
       searchTweetsAndPost($('.search-input').val());
     });
   

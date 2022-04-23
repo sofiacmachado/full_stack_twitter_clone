@@ -13,7 +13,12 @@ module Api
       @tweet = user.tweets.new(tweet_params)
 
       if @tweet.save
-        TweetMailer.notify(@tweet).deliver!
+        begin
+          TweetMailer.notify(@tweet).deliver!
+        rescue Net::SMTPUnknownError
+          render json: { success: false, reason: 'SMTP Unknown Error' }
+          return
+        end
         render 'api/tweets/create'
       end
     end
@@ -46,11 +51,13 @@ module Api
         render 'api/tweets/index'
       end
     end
-
+      
     private
 
       def tweet_params
         params.require(:tweet).permit(:message, :image)
       end
   end
+
+  
 end
