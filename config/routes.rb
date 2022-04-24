@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root 'static_pages#home'
-  get '/feeds'                     =>'feeds#index'
+
+  get '/feeds'                     => 'feeds#index'
+  get '/:username'                 => 'feeds#by_user'
 
   namespace :api do
     # USERS
@@ -18,5 +20,5 @@ Rails.application.routes.draw do
     get  '/users/:username/tweets' => 'tweets#index_by_user'
   end
 
-  get '*path' => 'static_pages#home'
+  get '*path' => redirect('/')
 end
