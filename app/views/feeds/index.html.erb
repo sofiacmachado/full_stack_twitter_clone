@@ -83,29 +83,26 @@
     </div>
     <div class="col-xs-6 feed-box">
       <div class="col-xs-12 post-tweet-box">
-        <textarea type="text" class="form-control post-input" rows="3" placeholder="What's happening?"></textarea>
+        <textarea type="text" class="form-control post-input" rows="3" placeholder="What's happening, <%= @myself %>?"></textarea>
         <div class="pull-right">
           <span class="post-char-counter">140</span>
           <button class="btn btn-primary" id="post-tweet-btn">Tweet</button>
         </div>
       </div>
       <div class="feed">
-        <div class="tweet col-xs-12">
-          <a class="tweet-username" href="#">User</a>
-          <a class="tweet-screenName" href="#">@User</a>
-          <p>This is an amazing tweet</p>
-          <a class="delete-tweet" href="#">Delete</a>
-        </div>
-        <div class="tweet col-xs-12">
-          <a class="tweet-username" href="#">User</a>
-          <a class="tweet-screenName" href="#">@User</a>
-          <p>This is an amazing tweet</p>
-        </div>
-        <div class="tweet col-xs-12">
-          <a class="tweet-username" href="#">User</a>
-          <a class="tweet-screenName" href="#">@User</a>
-          <p>This is an amazing tweet</p>
-        </div>
+        <% @tweets.each do |tweet| %>
+          <div class="tweet col-xs-12">
+            <!--<a class="tweet-screenName" href="/<%= tweet.user.username %>"><%= tweet.user.username %></a>-->
+            <a class="tweet-username" href="/<%= tweet.user.username %>">@<%= tweet.user.username %></a>
+            <p><%= tweet.message %></p>
+            <% if tweet.image.attached? %>
+              <img src="<%= url_for(tweet.image) %>" />
+            <% end %>
+            <% if tweet.user.username == @myself %>
+              <a class="delete-tweet" href="#">Delete</a>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
     <div class="col-xs-3 follow-suggest">

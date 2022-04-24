@@ -148,12 +148,14 @@ $('.feed').ready(function(){
     });
   }
 
+  /*
   $('.tweet-username').click(function(e) {
     e.preventDefault();
     console.log('user tweets');
     getUserTweetsAndPost($(this).text());
     profileCardChanger($(this).text());
   });
+  */
 
   $('.username').click(function(e) {
     e.preventDefault();
@@ -195,6 +197,6 @@ $('.feed').ready(function(){
     searchTweetsAndPost($('.search-input').val());
   });
 
-  getTweetsAndPost();
+  // getTweetsAndPost();
   
 });

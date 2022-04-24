@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root 'static_pages#home'
 
-  get '/feeds'                     => 'feeds#index'
+  get '/feeds'                     => 'feeds#show_all'
   get '/:username'                 => 'feeds#by_user'
 
   namespace :api do
