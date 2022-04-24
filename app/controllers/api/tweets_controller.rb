@@ -16,8 +16,6 @@ module Api
         begin
           TweetMailer.notify(@tweet).deliver!
         rescue Net::SMTPUnknownError
-          render json: { success: false, reason: 'SMTP Unknown Error' }
-          return
         end
         render 'api/tweets/create'
       end
