@@ -41,9 +41,9 @@ $(".static_pages.home").ready(function(){
   //------------------ changing background image ---------------------
 
   var backgroundURL = [
-    "<%= asset_path 'background_2.png' %>",
-    "<%= asset_path 'background_3.jpg' %>",
-    "<%= asset_path 'background_1.png' %>"
+    '"images/background_2.png"',
+    '"images/background_3.jpg"',
+    '"images/background_1.png"'
   ]
   var backStep = 0;
 
