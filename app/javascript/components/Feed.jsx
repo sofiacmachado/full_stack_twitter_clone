@@ -1,66 +1,127 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import * as requests from '../src//requests';
 
 import './Feed.scss';
 
-const NavBar = props => (
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#"><i class="fa fa-twitter"></i></a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span id="user-icon">User</span></a>
-                    <ul class="dropdown-menu row" role="menu">
-                        <li ><a href="#" class="username">User</a></li>
-                        <li role="presentation" class="divider"></li>
-                        <li ><a href="#">Lists</a></li>
-                        <li role="presentation" class="divider"></li>
-                        <li ><a href="#">Help</a></li>
-                        <li ><a href="#">Keyboard shortcuts</a></li>
-                        <li role="presentation" class="divider"></li>
-                        <li ><a href="#">Settings</a></li>
-                        <li ><a id="log-out" href="#">Log out</a></li>
+
+//--------------- Post Tweet Char Counter ----------------
+
+function charCount() {
+    let char = $('.post-input').val().length;
+    $('.post-char-counter').text(140-char);
+    if(char > 0 && char <= 140) {
+        $("#post-tweet-btn").removeAttr('disabled');
+    } else {
+        $("#post-tweet-btn").attr('disabled','disabled');
+    }
+}
+
+// --------------- Change Profile Card ---------------------
+
+function profileCardChanger(username) {
+    $('.user-field .username').text(username);
+    $('.user-field .username').attr('href', '/' + username);
+    $('.user-field .screenName').text('@' + username);
+    $('.user-field .screenName').attr('href', '/' + username);
+    requests.getUserTweets(username, response => {
+        $('.user-stats-tweets').text(response.length);
+    });
+}
+
+// ------------------ React Components ---------------------
+
+
+class NavBar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+
+        this.doLogout = this.doLogout.bind(this);
+        this.doSearch = this.doSearch.bind(this);
+    }
+
+    doLogout(e) {
+        e.preventDefault();
+        requests.logoutUser(() => {
+            requests.authenticate(
+                response => {
+                    if(!response.authenticated) {
+                        window.location.replace("/");
+                    }
+                },
+                error => console.log(error)
+            );
+        });
+    }
+
+    doSearch(e) {
+        e.preventDefault();
+        const keyword = $('.search-input').val();
+        requests.searchTweets(keyword, this.props.updateTweets);
+    }
+
+    render() {
+        return (
+            <nav className="navbar navbar-default navbar-fixed-top">
+                <div className="container">
+                    <div className="navbar-header">
+                        <a className="navbar-brand" href='/feeds'><i className="fa fa-twitter"></i></a>
+                    </div>
+                    <ul className="nav navbar-nav navbar-right">
+                        <li className="dropdown">
+                            <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span id="user-icon">User</span></a>
+                            <ul className="dropdown-menu row" role="menu">
+                                <li ><a href="#" className="username">User</a></li>
+                                <li role="presentation" className="divider"></li>
+                                <li ><a href="#">Lists</a></li>
+                                <li role="presentation" className="divider"></li>
+                                <li ><a href="#">Help</a></li>
+                                <li ><a href="#">Keyboard shortcuts</a></li>
+                                <li role="presentation" className="divider"></li>
+                                <li ><a href="#">Settings</a></li>
+                                <li ><a id="log-out" onClick={this.doLogout}>Log out</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                </li>
-            </ul>
-            <div class="search-bar col-xs-3 nav navbar-right">
-                <div class="input-group">
-                    <input type="text" class="form-control search-input" placeholder="Search for..." />
-                    <span class="input-group-btn">
-                        <button class="btn btn-default search-btn" type="button">Go!</button>
-                    </span>
+                    <div className="search-bar col-xs-3 nav navbar-right">
+                        <div className="input-group">
+                            <input type="text" className="form-control search-input" placeholder="Search for..." />
+                            <span className="input-group-btn">
+                                <button className="btn btn-default search-btn" type="button" onClick={this.doSearch}>Go!</button>
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </nav>
-);
+            </nav>
+        );
+    }
+}
 
 const ProfileCard = props => (
-    <div class="profileCard col-xs-12">
-        <div class="profileCard-content">
-            <div class="user-field col-xs-12">
-                <a class="username" href="#">User</a><br/>
-                <a class="screenName" href="#">@User</a>
+    <div className="profileCard col-xs-12">
+        <div className="profileCard-content">
+            <div className="user-field col-xs-12">
+                <a className="username" href="#">User</a><br/>
+                <a className="screenName" href="#">@User</a>
             </div>
-            <div class="user-stats">
-                <div class="col-xs-3">
+            <div className="user-stats">
+                <div className="col-xs-3">
                     <a href="">
                         <span>Tweets</span><br/>
-                        <span class="user-stats-tweets">10</span>
+                        <span className="user-stats-tweets">0</span>
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div className="col-xs-4">
                     <a href="">
                         <span>Following</span><br/>
-                        <span class="user-stats-following">0</span>
+                        <span className="user-stats-following">0</span>
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div className="col-xs-4">
                     <a href="">
                         <span>Followers</span><br/>
-                        <span class="user-stats-followers">0</span>
+                        <span className="user-stats-followers">0</span>
                     </a>
                 </div>
             </div>
@@ -69,12 +130,12 @@ const ProfileCard = props => (
 );
 
 const Trends = props => (
-    <div class="trends col-xs-12">
-        <div class="col-xs-12">
-            <div class="trends-header">
+    <div className="trends col-xs-12">
+        <div className="col-xs-12">
+            <div className="trends-header">
                 <span>Trends</span><span> &#183; </span><small><a href="">Change</a></small>      
             </div>
-            <ul class="trends-list">
+            <ul className="trends-list">
                 <li><a href="#">#Hongkong</a></li>
                 <li><a href="#">#Ruby</a></li>
                 <li><a href="#">#foobarbaz</a></li>
@@ -85,57 +146,88 @@ const Trends = props => (
     </div>
 );
 
-const TweetBox = props => (
-    <div class="col-xs-12 post-tweet-box">
-        <textarea type="text" class="form-control post-input" rows="3" placeholder="What's happening, <%= @myself %>?"></textarea>
-        <div class="pull-right">
-            <span class="post-char-counter">140</span>
-            <button class="btn btn-primary" id="post-tweet-btn">Tweet</button>
-        </div>
-    </div>
-);
+class TweetBox extends React.Component {
+    constructor(props) {
+        super(props);
 
-function Tweet(props) {
-    const username = props.tweet.username;
-    const userURL = `/${username}`;
-    let image = null;
-    if (props.tweet.image != null) {
-        image = <img src={props.tweet.image} />;
+        this.postTweet = this.postTweet.bind(this);
     }
-    let deleteButton = null;
-    if (props.currentUser === props.tweet.username) {
-        deleteButton = <a class="delete-tweet" href="#">Delete</a>;
-    }
-    return (
-        <div class="tweet col-xs-12">
-            <a class="tweet-username" href={userURL}>@{username}</a>
-            <p>{props.tweet.message}</p>
-            {image}
-            {deleteButton}
-        </div>
-    );
-}
 
-const MainContainer = props => (
-    <div class="main container">
-        <div class="row">
-            <div class="col-xs-3 profile-trends">
-                <ProfileCard />
-                <Trends />
-            </div>
-            <div class="col-xs-6 feed-box">
-                <TweetBox />
-                <div class="feed">
-                    {props.tweets.map(tweet => (
-                        <Tweet username={tweet.username} message={tweet.message} image={tweet.image} currentUser={props.currentUser} />
-                    ))}
+    postTweet(e) {
+        e.preventDefault();
+        console.log('hoooo');
+        const message = $('.post-input').val();
+        const currentUser = this.props.currentUser;
+        const getTweetsAndPost = this.props.getTweetsAndPost;
+        requests.postTweet(message, result => {
+            if (result.success) {
+                $('.post-input').val('');
+                getTweetsAndPost();
+                charCount();
+                requests.getUserTweets(currentUser, function (response) {
+                    $('.user-stats-tweets').text(response.length);
+                });
+            } else {
+                alert('Something went wrong while posting your tweet.');
+                console.log(result.reason);
+            }
+        });
+    }
+
+    render() {
+        const placeholder = `What's happening, ${this.props.currentUser}?`;
+        return (
+            <div className="col-xs-12 post-tweet-box">
+                <textarea type="text" className="form-control post-input" rows="3" placeholder={placeholder} onKeyUp={charCount}></textarea>
+                <div className="pull-right">
+                    <span className="post-char-counter">140</span>
+                    <button className="btn btn-primary" id="post-tweet-btn" onClick={this.postTweet}>Tweet</button>
                 </div>
             </div>
-            <div class="col-xs-3 follow-suggest">
+        );
+    }
+}
+
+class Tweet extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentUser: props.currentUser,
+            tweet: props.tweet
+        };
+
+        this.deleteOneTweet = this.deleteOneTweet.bind(this);
+    }
+
+    deleteOneTweet(e) {
+        e.preventDefault();
+        const tweetID = this.state.tweet.id;
+        requests.deleteOneTweet(tweetID, this.props.getTweetsAndPost);
+    }
+
+    render() {
+        const tweet = this.state.tweet;
+        const userURL = `/${tweet.username}`;
+
+        let image = null;
+        if (tweet.image != null) {
+            image = <img src={tweet.image} />;
+        }
+
+        let deleteButton = null;
+        if (this.state.currentUser === tweet.username) {
+            deleteButton = <a className="delete-tweet" onClick={this.deleteOneTweet}>Delete</a>;
+        }
+        return (
+            <div className="tweet col-xs-12">
+                <a className="tweet-username" href={userURL}>@{tweet.username}</a>
+                <p>{tweet.message}</p>
+                {image}
+                {deleteButton}
             </div>
-        </div>
-    </div>
-);
+        );
+    }
+}
 
 class Feed extends React.Component {
     constructor(props) {
@@ -146,10 +238,54 @@ class Feed extends React.Component {
             error: null,
             tweets: []
         };
+
+        this.authenticateResponse = this.authenticateResponse.bind(this);
+        this.getTweetsAndPost = this.getTweetsAndPost.bind(this);
+        this.updateTweets = this.updateTweets.bind(this);
+    }
+
+    authenticateResponse(response) {
+        if (response.authenticated) {
+            const currentUser = response.username;
+            this.setState({
+                error: null,
+                isLoaded: true,
+                currentUser: currentUser
+            });
+            $('#user-icon').text(currentUser);
+            profileCardChanger(currentUser);
+        } else {
+            window.location.replace('/');
+        }
+    }
+
+    getTweetsAndPost() {
+        requests.getAllTweets(this.updateTweets);
+    }
+
+    updateTweets(tweets) {
+        this.setState({
+            error: null,
+            isLoaded: true,
+            tweets: tweets
+        });
     }
 
     componentDidMount() {
-        // TODO: ajax
+        requests.authenticate(this.authenticateResponse, console.log);
+        let username = window.location.pathname;
+        if (username) {
+            if (username.startsWith('/')) {
+                username = username.substring(1);
+            }
+            if (username === 'feeds') {
+                requests.getAllTweets(this.updateTweets);
+            } else {
+                requests.getUserTweets(username, this.updateTweets);
+            }
+        } else {
+            requests.getAllTweets(this.updateTweets);
+        }
     }
 
     render() {
@@ -161,8 +297,25 @@ class Feed extends React.Component {
         }
         return (
             <div>
-                <NavBar />
-                <MainContainer tweets={this.state.tweets} currentUser={this.state.currentUser} />
+                <NavBar getTweetsAndPost={this.getTweetsAndPost} updateTweets={this.updateTweets} />
+                <div className="main container">
+                    <div className="row">
+                        <div className="col-xs-3 profile-trends">
+                            <ProfileCard />
+                            <Trends />
+                        </div>
+                        <div className="col-xs-6 feed-box">
+                            <TweetBox currentUser={this.state.currentUser} getTweetsAndPost={this.getTweetsAndPost} />
+                            <div className="feed">
+                                {this.state.tweets.map(tweet => (
+                                    <Tweet key={tweet.id} tweet={tweet} currentUser={this.state.currentUser} getTweetsAndPost={this.getTweetsAndPost} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="col-xs-3 follow-suggest">
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

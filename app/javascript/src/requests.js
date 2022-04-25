@@ -82,7 +82,7 @@ export function authenticate(successCB,errorCB) {
   newRequest['url'] = 'api/authenticated';
   newRequest['xhrFields'] = { 'withCredentials': true };
   newRequest['success'] = function(response){
-    console.log(response);
+    console.log('requests.authenticate', response);
     return successCB(response);
   };
   newRequest['error'] = function(request, errorMessage) {
@@ -106,7 +106,7 @@ export function postTweet(msg, callback) {
     }
   };
   newRequest['success'] = function(response){
-    console.log(response);
+    console.log('requests.postTweet', response);
     return callback({'success': true});
   };
 
@@ -120,6 +120,7 @@ export function getAllTweets(callback) {
   newRequest['type'] = 'GET';
   newRequest['url'] = 'api/tweets';
   newRequest['success'] = function(response){
+    console.log('requests.getAllTweets', response);
     return callback(response.tweets);
   };
 
@@ -133,7 +134,7 @@ export function getOneTweet(id) {
   newRequest['type'] = 'GET';
   newRequest['url'] = 'api/tweets/' + id;
   newRequest['success'] = function(response){
-    console.log(response);
+    console.log('requests.getOneTweet', response);
   };
 
   $.ajax(newRequest);
@@ -146,7 +147,7 @@ export function getUserTweets(username, callback) {
   newRequest['type'] = 'GET';
   newRequest['url'] = 'api/users/' + username + '/tweets';
   newRequest['success'] = function(response){
-    console.log(response);
+    console.log(`requests.getUserTweets(${username})`, response);
     return callback(response.tweets);
   };
 
@@ -161,7 +162,7 @@ export function deleteOneTweet(id, callback) {
   newRequest['url'] = 'api/tweets/' + id;
   newRequest['xhrFields'] = { 'withCredentials': true };
   newRequest['success'] = function(response){
-    console.log(response);
+    console.log('requests.deleteOneTweet', response);
     return callback();
   };
 
@@ -176,7 +177,7 @@ export function searchTweets(keyword, callback) {
   newRequest['type'] = "GET";
   newRequest['url'] = "api/tweets/search/"+keyword;
   newRequest["success"] = function(response){
-    console.log(response);
+    console.log('requests.searchTweets', response);
     return callback(response.tweets);
   };
 
