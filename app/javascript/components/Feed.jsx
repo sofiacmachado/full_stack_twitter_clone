@@ -1,9 +1,6 @@
 import React from 'react'
 import * as requests from '../src//requests';
 
-import './Feed.scss';
-
-
 //--------------- Post Tweet Char Counter ----------------
 
 function charCount() {

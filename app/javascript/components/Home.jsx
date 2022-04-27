@@ -1,7 +1,5 @@
 import React from 'react'
 
-import './Home.scss';
-
 const Home = props => (
   <div>
     <div id="homeback">
