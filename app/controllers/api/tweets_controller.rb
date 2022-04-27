@@ -9,13 +9,13 @@ module Api
     def create
       token = cookies.signed[:twitter_session_token]
       session = Session.find_by(token: token)
-      user = session.user
-      @tweet = user.tweets.new(tweet_params)
+      @user = session.user
+      @tweet = @user.tweets.new(tweet_params)
 
       if @tweet.save
         begin
           TweetMailer.notify(@tweet).deliver!
-        rescue Net::SMTPUnknownError
+        rescue Net::SMTPUnknownError, Errno::ECONNREFUSED
         end
         render 'api/tweets/create'
       end
