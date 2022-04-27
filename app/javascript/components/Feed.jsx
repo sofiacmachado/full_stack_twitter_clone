@@ -16,25 +16,12 @@ function charCount() {
     }
 }
 
-// --------------- Change Profile Card ---------------------
-
-function profileCardChanger(username) {
-    $('.user-field .username').text(username);
-    $('.user-field .username').attr('href', '/' + username);
-    $('.user-field .screenName').text('@' + username);
-    $('.user-field .screenName').attr('href', '/' + username);
-    requests.getUserTweets(username, response => {
-        $('.user-stats-tweets').text(response.length);
-    });
-}
-
 // ------------------ React Components ---------------------
 
 
 class NavBar extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
 
         this.doLogout = this.doLogout.bind(this);
         this.doSearch = this.doSearch.bind(this);
@@ -61,6 +48,13 @@ class NavBar extends React.Component {
     }
 
     render() {
+        let link = '#';
+        let username = 'User';
+        if (this.props.username != null) {
+            username = this.props.username;
+            link = `/${this.props.username}`;
+        }
+
         return (
             <nav className="navbar navbar-default navbar-fixed-top">
                 <div className="container">
@@ -69,9 +63,9 @@ class NavBar extends React.Component {
                     </div>
                     <ul className="nav navbar-nav navbar-right">
                         <li className="dropdown">
-                            <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span id="user-icon">User</span></a>
+                            <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span id="user-icon">{username}</span></a>
                             <ul className="dropdown-menu row" role="menu">
-                                <li ><a href="#" className="username">User</a></li>
+                                <li ><a href={link} className="username">{username}</a></li>
                                 <li role="presentation" className="divider"></li>
                                 <li ><a href="#">Lists</a></li>
                                 <li role="presentation" className="divider"></li>
@@ -97,36 +91,45 @@ class NavBar extends React.Component {
     }
 }
 
-const ProfileCard = props => (
-    <div className="profileCard col-xs-12">
-        <div className="profileCard-content">
-            <div className="user-field col-xs-12">
-                <a className="username" href="#">User</a><br/>
-                <a className="screenName" href="#">@User</a>
-            </div>
-            <div className="user-stats">
-                <div className="col-xs-3">
-                    <a href="">
-                        <span>Tweets</span><br/>
-                        <span className="user-stats-tweets">0</span>
-                    </a>
+const ProfileCard = props => {
+    let link = '#';
+    let username = 'User';
+    if (props.username != null) {
+        username = props.username;
+        link = `/${props.username}`;
+    }
+
+    return (
+        <div className="profileCard col-xs-12">
+            <div className="profileCard-content">
+                <div className="user-field col-xs-12">
+                    <a className="username" href={link}>{username}</a><br/>
+                    <a className="screenName" href={link}>@{username}</a>
                 </div>
-                <div className="col-xs-4">
-                    <a href="">
-                        <span>Following</span><br/>
-                        <span className="user-stats-following">0</span>
-                    </a>
-                </div>
-                <div className="col-xs-4">
-                    <a href="">
-                        <span>Followers</span><br/>
-                        <span className="user-stats-followers">0</span>
-                    </a>
+                <div className="user-stats">
+                    <div className="col-xs-3">
+                        <a href="">
+                            <span>Tweets</span><br/>
+                            <span className="user-stats-tweets">0</span>
+                        </a>
+                    </div>
+                    <div className="col-xs-4">
+                        <a href="">
+                            <span>Following</span><br/>
+                            <span className="user-stats-following">0</span>
+                        </a>
+                    </div>
+                    <div className="col-xs-4">
+                        <a href="">
+                            <span>Followers</span><br/>
+                            <span className="user-stats-followers">0</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const Trends = props => (
     <div className="trends col-xs-12">
@@ -244,6 +247,7 @@ class Feed extends React.Component {
     }
 
     authenticateResponse(response) {
+        console.log('authenticate response', response.authenticated);
         if (response.authenticated) {
             const currentUser = response.username;
             this.setState({
@@ -251,8 +255,11 @@ class Feed extends React.Component {
                 isLoaded: true,
                 currentUser: currentUser
             });
-            $('#user-icon').text(currentUser);
-            profileCardChanger(currentUser);
+            //$('#user-icon').text(currentUser);
+            //profileCardChanger(currentUser);
+            requests.getUserTweets(currentUser, tweets => {
+                $('.user-stats-tweets').text(tweets.length);
+            });
         } else {
             window.location.replace('/');
         }
@@ -296,11 +303,11 @@ class Feed extends React.Component {
         }
         return (
             <div>
-                <NavBar getTweetsAndPost={this.getTweetsAndPost} updateTweets={this.updateTweets} />
+                <NavBar getTweetsAndPost={this.getTweetsAndPost} updateTweets={this.updateTweets} username={this.state.currentUser} />
                 <div className="main container">
                     <div className="row">
                         <div className="col-xs-3 profile-trends">
-                            <ProfileCard />
+                            <ProfileCard username={this.state.currentUser} />
                             <Trends />
                         </div>
                         <div className="col-xs-6 feed-box">
