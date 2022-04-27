@@ -11860,6 +11860,7 @@ Copyright © 2018 Basecamp, LLC
         return this.monitor.recordPing();
 
        case message_types.confirmation:
+        this.subscriptions.confirmSubscription(identifier);
         return this.subscriptions.notify(identifier, "connected");
 
        case message_types.rejection:
@@ -11929,10 +11930,52 @@ Copyright © 2018 Basecamp, LLC
     };
     return Subscription;
   }();
+  var SubscriptionGuarantor = function() {
+    function SubscriptionGuarantor(subscriptions) {
+      classCallCheck(this, SubscriptionGuarantor);
+      this.subscriptions = subscriptions;
+      this.pendingSubscriptions = [];
+    }
+    SubscriptionGuarantor.prototype.guarantee = function guarantee(subscription) {
+      if (this.pendingSubscriptions.indexOf(subscription) == -1) {
+        logger.log("SubscriptionGuarantor guaranteeing " + subscription.identifier);
+        this.pendingSubscriptions.push(subscription);
+      } else {
+        logger.log("SubscriptionGuarantor already guaranteeing " + subscription.identifier);
+      }
+      this.startGuaranteeing();
+    };
+    SubscriptionGuarantor.prototype.forget = function forget(subscription) {
+      logger.log("SubscriptionGuarantor forgetting " + subscription.identifier);
+      this.pendingSubscriptions = this.pendingSubscriptions.filter(function(s) {
+        return s !== subscription;
+      });
+    };
+    SubscriptionGuarantor.prototype.startGuaranteeing = function startGuaranteeing() {
+      this.stopGuaranteeing();
+      this.retrySubscribing();
+    };
+    SubscriptionGuarantor.prototype.stopGuaranteeing = function stopGuaranteeing() {
+      clearTimeout(this.retryTimeout);
+    };
+    SubscriptionGuarantor.prototype.retrySubscribing = function retrySubscribing() {
+      var _this = this;
+      this.retryTimeout = setTimeout(function() {
+        if (_this.subscriptions && typeof _this.subscriptions.subscribe === "function") {
+          _this.pendingSubscriptions.map(function(subscription) {
+            logger.log("SubscriptionGuarantor resubscribing " + subscription.identifier);
+            _this.subscriptions.subscribe(subscription);
+          });
+        }
+      }, 500);
+    };
+    return SubscriptionGuarantor;
+  }();
   var Subscriptions = function() {
     function Subscriptions(consumer) {
       classCallCheck(this, Subscriptions);
       this.consumer = consumer;
+      this.guarantor = new SubscriptionGuarantor(this);
       this.subscriptions = [];
     }
     Subscriptions.prototype.create = function create(channelName, mixin) {
@@ -11947,7 +11990,7 @@ Copyright © 2018 Basecamp, LLC
       this.subscriptions.push(subscription);
       this.consumer.ensureActiveConnection();
       this.notify(subscription, "initialized");
-      this.sendCommand(subscription, "subscribe");
+      this.subscribe(subscription);
       return subscription;
     };
     Subscriptions.prototype.remove = function remove(subscription) {
@@ -11966,6 +12009,7 @@ Copyright © 2018 Basecamp, LLC
       });
     };
     Subscriptions.prototype.forget = function forget(subscription) {
+      this.guarantor.forget(subscription);
       this.subscriptions = this.subscriptions.filter(function(s) {
         return s !== subscription;
       });
@@ -11979,7 +12023,7 @@ Copyright © 2018 Basecamp, LLC
     Subscriptions.prototype.reload = function reload() {
       var _this2 = this;
       return this.subscriptions.map(function(subscription) {
-        return _this2.sendCommand(subscription, "subscribe");
+        return _this2.subscribe(subscription);
       });
     };
     Subscriptions.prototype.notifyAll = function notifyAll(callbackName) {
@@ -12003,6 +12047,18 @@ Copyright © 2018 Basecamp, LLC
       }
       return subscriptions.map(function(subscription) {
         return typeof subscription[callbackName] === "function" ? subscription[callbackName].apply(subscription, args) : undefined;
+      });
+    };
+    Subscriptions.prototype.subscribe = function subscribe(subscription) {
+      if (this.sendCommand(subscription, "subscribe")) {
+        this.guarantor.guarantee(subscription);
+      }
+    };
+    Subscriptions.prototype.confirmSubscription = function confirmSubscription(identifier) {
+      var _this4 = this;
+      logger.log("Subscription confirmed " + identifier);
+      this.findAll(identifier).map(function(subscription) {
+        return _this4.guarantor.forget(subscription);
       });
     };
     Subscriptions.prototype.sendCommand = function sendCommand(subscription, command) {
@@ -12075,6 +12131,7 @@ Copyright © 2018 Basecamp, LLC
   exports.INTERNAL = INTERNAL;
   exports.Subscription = Subscription;
   exports.Subscriptions = Subscriptions;
+  exports.SubscriptionGuarantor = SubscriptionGuarantor;
   exports.adapters = adapters;
   exports.createWebSocketURL = createWebSocketURL;
   exports.logger = logger;

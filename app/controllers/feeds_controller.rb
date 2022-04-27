@@ -4,8 +4,8 @@ class FeedsController < ApplicationController
 
     @tweets = Tweet.all.order(created_at: :desc)
 
-    # feeds/index uses @myself and @tweets
-    render 'feeds/index'
+    # feeds uses @myself and @tweets
+    render 'static_pages/feeds'
   end
 
   def by_user
@@ -16,8 +16,8 @@ class FeedsController < ApplicationController
 
     if user
       @tweets = user.tweets
-      # feeds/index uses @myself and @tweets
-      render 'feeds/index'
+      # feeds uses @myself and @tweets
+      render 'static_pages/feeds'
     else
       # this error page uses @username
       render 'static_pages/user_unknown'
